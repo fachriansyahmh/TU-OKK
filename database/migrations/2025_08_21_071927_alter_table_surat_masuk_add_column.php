@@ -14,13 +14,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('surat_masuk', function (Blueprint $table) {
-            // Menambahkan foreign key ke tabel 'disposisi_kepada'
-            $table->foreignId('disposisi_kepada_id')
-                  ->nullable()
-                  ->constrained('disposisi_kepada')
-                  ->onDelete('set null');
+            // Mengubah kolom menjadi string biasa, bukan foreign key
+            $table->string('disposisi_kepada')->nullable();
 
-            // Menambahkan foreign key ke tabel 'disposisi'
+            // Kolom ini tetap sebagai foreign key
             $table->foreignId('disposisi_id')
                   ->nullable()
                   ->constrained('disposisi')
@@ -38,12 +35,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('surat_masuk', function (Blueprint $table) {
-            // Hapus foreign key terlebih dahulu, menggunakan nama kolomnya
-            $table->dropForeign(['disposisi_kepada_id']);
+            // Menghapus foreign key dan kolom yang benar
             $table->dropForeign(['disposisi_id']);
-
-            // Kemudian hapus kolomnya
-            $table->dropColumn(['disposisi_kepada_id', 'disposisi_id', 'isi_disposisi']);
+            $table->dropColumn(['disposisi_kepada', 'disposisi_id', 'isi_disposisi']);
         });
     }
 };

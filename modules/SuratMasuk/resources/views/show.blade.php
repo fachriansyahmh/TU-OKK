@@ -17,7 +17,7 @@
         <tr><td>Tgl Naskah</td><td>{{ $suratMasuk->tgl_naskah }}</td></tr>
         <tr><td>Tgl Diterima</td><td>{{ $suratMasuk->tgl_diterima }}</td></tr>
         <tr><td>Ringkasan Isi Surat</td><td>{{ $suratMasuk->ringkasan_isi_surat }}</td></tr>
-        <tr><td>Lampiran</td><td>{{ $suratMasuk->lampiran }}</td></tr>
+        {{-- <tr><td>Lampiran</td><td>{{ $suratMasuk->lampiran }}</td></tr> --}}
         </table>
     </x-volt-panel>
 </x-volt-app>

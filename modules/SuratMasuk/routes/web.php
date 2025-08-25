@@ -10,6 +10,10 @@ Route::group(
         'middleware' => config('modules.surat-masuk.routes.middleware'),
     ],
     function () {
+        // Menambahkan route baru untuk halaman disposisi
+        Route::get('surat-masuk/{suratMasuk}/disposisi', [SuratMasukController::class, 'disposisi'])->name('surat-masuk.disposisi');
+
+        // Route resource untuk CRUD yang sudah ada
         Route::resource('surat-masuk', SuratMasukController::class);
     }
 );

@@ -14,18 +14,24 @@ class Store extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required'],
-            'pengolah_id' => [''],
-            'sifat_naskah' => ['required'],
-            'jenis_naskah_id' => [''],
-            'nama_pengirim' => ['required'],
-            'jabatan_pengirim' => ['required'],
-            'instansi_pengirim' => ['required'],
-            'nomor_naskah' => ['required'],
-            'tgl_naskah' => ['required'],
-            'tgl_diterima' => ['required'],
-            'ringkasan_isi_surat' => ['required'],
-            '_lampiran' => ['required'],
+            // Aturan yang sudah ada dibuat 'sometimes' agar tidak wajib diisi saat update disposisi
+            'status' => ['sometimes', 'required'],
+            'pengolah_id' => ['nullable'],
+            'sifat_naskah' => ['sometimes', 'required'],
+            'jenis_naskah_id' => ['nullable'],
+            'nama_pengirim' => ['sometimes', 'required'],
+            'jabatan_pengirim' => ['sometimes', 'required'],
+            'instansi_pengirim' => ['sometimes', 'required'],
+            'nomor_naskah' => ['sometimes', 'required'],
+            'tgl_naskah' => ['sometimes', 'required'],
+            'tgl_diterima' => ['sometimes', 'required'],
+            'ringkasan_isi_surat' => ['sometimes', 'required'],
+            '_lampiran' => ['sometimes', 'required'],
+
+            // Aturan validasi baru untuk form disposisi
+            'disposisi_kepada' => ['nullable', 'string', 'max:255'],
+            'disposisi_id' => ['nullable', 'integer'],
+            'isi_disposisi' => ['nullable', 'string'],
         ];
     }
 
