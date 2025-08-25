@@ -30,12 +30,19 @@ class SuratMasukTableView extends TableView
             Numbering::make('No'),
             Text::make('status')->sortable(),
             Raw::make(function ($data) {
-                return $data->pengolah->nama_pengolah;
+                return $data->pengolah?->nama_pengolah;
             }, 'Pengolah')->sortable('pengolah.nama_pengolah'),
             Text::make('sifat_naskah')->sortable(),
             Raw::make(function ($data) {
-                return $data->jenis_surat->jenis_surat;
+                return $data->jenis_surat?->jenis_surat;
             }, 'Jenis Naskah')->sortable('jenis_surat.jenis_surat'),
+            Raw::make(function ($data) {
+                return $data->disposisi_kepada?->disposisi_kepada;
+            }, 'disposisi_kepada')->sortable('disposisi_kepada.disposisi_kepada'),
+            Raw::make(function ($data) {
+                return $data->disposisi?->disposisi;
+            }, 'disposisi')->sortable('disposisi.disposisi'),
+            Text::make('isi_disposisi')->sortable(),
             Text::make('nama_pengirim')->sortable(),
             Text::make('jabatan_pengirim')->sortable(),
             Text::make('instansi_pengirim')->sortable(),

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Laravolt\Suitable\AutoFilter;
 use Laravolt\Suitable\AutoSearch;
 use Laravolt\Suitable\AutoSort;
+use Modules\Disposisi\Models\Disposisi;
+use Modules\DisposisiKepada\Models\DisposisiKepada;
 use Modules\JenisSurat\Models\JenisSurat;
 use Modules\Pengolah\Models\Pengolah;
 
@@ -31,5 +33,12 @@ class SuratMasuk extends Model
     }
     public function jenis_surat() {
         return $this->belongsTo(JenisSurat::class, 'jenis_naskah_id');
+    }
+    public function disposisi_kepada() {
+        return $this->belongsTo(DisposisiKepada::class, 'disposisi_kepada_id');
+    }
+
+    public function disposisi() {
+        return $this->belongsTo(Disposisi::class, 'disposisi_id');
     }
 }
