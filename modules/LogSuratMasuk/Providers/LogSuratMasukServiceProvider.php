@@ -1,16 +1,14 @@
 <?php
 
-namespace Modules\SuratMasuk\Providers;
+namespace Modules\LogSuratMasuk\Providers;
 
-use App\Observers\SuratMasukObserver;
 use Laravolt\Support\Base\BaseServiceProvider;
-use Modules\SuratMasuk\Models\SuratMasuk;
 
-class SuratMasukServiceProvider extends BaseServiceProvider
+class LogSuratMasukServiceProvider extends BaseServiceProvider
 {
     public function getIdentifier(): string
     {
-        return 'surat-masuk';
+        return 'log-surat-masuk';
     }
 
     public function register(): void
@@ -25,25 +23,16 @@ class SuratMasukServiceProvider extends BaseServiceProvider
         }
     }
 
-    public function boot(): void
-    {
-        parent::boot();
-
-        // Mendaftarkan observer agar memantau model SuratMasuk
-        SuratMasuk::observe(SuratMasukObserver::class);
-    }
-
     protected function menu(): void
     {
-        // Memperbaiki typo dari '\' menjadi '.'
         app('laravolt.menu.builder')->register(function ($menu) {
             if ($menu->modules) {
                 $menu->modules
-                    ->add('Surat Masuk', route('modules::surat-masuk.index'))
-                    ->data('icon', 'envelope')
-                    ->data('order', 1) // Anda bisa menggunakan data('order') untuk urutan
+                    ->add('Log Surat Masuk', route('modules::log-surat-masuk.index'))
+                    ->data('icon', 'circle')
+                    ->data('order', 5) // Anda bisa menggunakan data('order') untuk urutan
                     ->data('permission', $this->config['permission'] ?? [])
-                    ->active('modules/surat-masuk/*');
+                    ->active('modules/log-surat-masuk/*');
             }
         });
     }

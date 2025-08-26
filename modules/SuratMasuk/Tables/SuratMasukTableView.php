@@ -42,6 +42,7 @@ class SuratMasukTableView extends TableView
             Text::make('isi_disposisi', 'Isi Disposisi')->sortable(),
             Text::make('nama_pengirim')->sortable(),
             Text::make('nomor_naskah')->sortable(),
+            Text::make('tgl_naskah')->sortable(),
             Text::make('tgl_diterima')->sortable(),
             Raw::make(function ($data) {
                 return '<a href="' . $data->lampiran . '" target="_blank" class="ui icon button basic mini"><i class="file alternate icon"></i></a>';

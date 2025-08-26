@@ -10,6 +10,7 @@ return [
     Modules\SuratMasuk\Providers\SuratMasukServiceProvider::class,
     // Modules\DisposisiKepada\Providers\DisposisiKepadaServiceProvider::class,
     Modules\Disposisi\Providers\DisposisiServiceProvider::class,
+    Modules\LogSuratMasuk\Providers\LogSuratMasukServiceProvider::class,
 
 
     
