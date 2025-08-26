@@ -29,7 +29,8 @@ class PengolahServiceProvider extends BaseServiceProvider
             if ($menu->modules) {
                 $menu->modules
                     ->add('Pengolah', route('modules::pengolah.index'))
-                    ->data('icon', 'circle')
+                    ->data('icon', 'user')
+                    ->data('order', 3)
                     ->data('permission', $this->config['permission'] ?? [])
                     ->active('modules/pengolah/*');
             }

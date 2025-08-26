@@ -29,7 +29,8 @@ class SuratMasukServiceProvider extends BaseServiceProvider
             if ($menu->modules) {
                 $menu->modules
                     ->add('Surat Masuk', route('modules::surat-masuk.index'))
-                    ->data('icon', 'circle')
+                    ->data('icon', 'envelope')
+                    ->data('order', 1)
                     ->data('permission', $this->config['permission'] ?? [])
                     ->active('modules/surat-masuk/*');
             }

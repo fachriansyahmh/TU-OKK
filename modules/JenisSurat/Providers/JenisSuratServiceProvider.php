@@ -29,7 +29,8 @@ class JenisSuratServiceProvider extends BaseServiceProvider
             if ($menu->modules) {
                 $menu->modules
                     ->add('Jenis Naskah', route('modules::jenis-surat.index'))
-                    ->data('icon', 'envelope')
+                    ->data('icon', 'tags')
+                    ->data('order', 4)
                     ->data('permission', $this->config['permission'] ?? [])
                     ->active('modules/jenis-surat/*');
             }
