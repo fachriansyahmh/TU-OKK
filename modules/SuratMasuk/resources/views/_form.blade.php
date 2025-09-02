@@ -1,5 +1,5 @@
 {!! form()->dropdown('status', ['Karo' => 'Karo','Kirim' => 'Kirim'])->label('Status')->required() !!}
-{!! form()->dropdownDB('pengolah_id', 'select id, nama_pengolah from pengolah ', 'id', 'nama_pengolah')->label('Nama Pengolah')->required()->placeholder('--Select--') !!}
+{{-- {!! form()->dropdownDB('pengolah_id', 'select id, nama_pengolah from pengolah ', 'id', 'nama_pengolah')->label('Nama Pengolah')->required()->placeholder('--Select--') !!} --}}
 {!! form()->dropdown('sifat_naskah', ['Biasa' => 'Biasa','Segera' => 'Segera', 'Rahasia' => 'Rahasia', 'Penting' => 'Penting'])->label('Sifat Naskah')->required()->placeholder('--Select--') !!}
 {!! form()->dropdownDB('jenis_naskah_id', 'select id, jenis_surat from jenis_surat ', 'id', 'jenis_surat')->label('Jenis Naskah')->required()->placeholder('--Select--') !!}
 {!! form()->text('nama_pengirim')->label('Nama Pengirim')->required() !!}

@@ -2,6 +2,7 @@
 
 namespace Modules\SuratMasuk\Tables;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Laravolt\Suitable\Columns\Numbering;
 use Laravolt\Suitable\Columns\RestfulButton;
@@ -12,25 +13,26 @@ use Modules\SuratMasuk\Models\SuratMasuk;
 
 class SuratMasukTableView extends TableView
 {
-    /**
-     * @return LengthAwarePaginator<int, SuratMasuk>
-     */
     public function source(): LengthAwarePaginator
     {
-        return SuratMasuk::autoSort()->latest()->autoSearch(request('search'))->paginate();
+        // 1. Tambahkan "with" untuk Eager Loading agar query lebih efisien
+        return SuratMasuk::with('pengolah')->autoSort()->autoSearch(request('search'))->paginate();
     }
 
-    /**
-     * @return array<int, mixed>
-     */
     protected function columns(): array
     {
         return [
             Numbering::make('No'),
-            Text::make('status')->sortable(),
             Raw::make(function ($data) {
-                return $data->pengolah?->nama_pengolah;
-            }, 'Pengolah')->sortable('pengolah.nama_pengolah'),
+                return str_pad($data->nomor_urut, 4, '0', STR_PAD_LEFT);
+            }, 'Penomoran')->sortable('nomor_urut'),
+            Text::make('status')->sortable(),
+
+            // 2. Ubah cara menampilkan nama dan kunci untuk sorting
+            Raw::make(function ($data) {
+                return $data->pengolah?->name; // Gunakan ->name bukan ->nama_pengolah
+            }, 'Pengolah')->sortable('pengolah.name'),
+
             Text::make('sifat_naskah')->sortable(),
             Raw::make(function ($data) {
                 return $data->jenis_surat?->jenis_surat;
@@ -41,19 +43,20 @@ class SuratMasukTableView extends TableView
             }, 'Disposisi')->sortable('disposisi.disposisi'),
             Text::make('isi_disposisi', 'Isi Disposisi')->sortable(),
             Text::make('nama_pengirim')->sortable(),
+            Text::make('jabatan_pengirim', 'Jabatan Pengirim')->sortable(),
+            Text::make('instansi_pengirim', 'Instansi Pengirim')->sortable(),
             Text::make('nomor_naskah')->sortable(),
-            Text::make('tgl_naskah')->sortable(),
-            Text::make('tgl_diterima')->sortable(),
+            Text::make('tgl_naskah', 'Tanggal Naskah')->sortable(),
+            Text::make('tgl_diterima', 'Tanggal Diterima')->sortable(),
+            Text::make('ringkasan_isi_surat', 'Ringkasan Isi Surat')->sortable(),
             Raw::make(function ($data) {
                 return '<a href="' . $data->lampiran . '" target="_blank" class="ui icon button basic mini"><i class="file alternate icon"></i></a>';
             }, 'Lampiran'),
-            // Tombol Disposisi di kolom terpisah
             Raw::make(function ($data) {
                 $disposisiUrl = route('modules::surat-masuk.disposisi', $data->id);
 
                 return '<a href="' . $disposisiUrl . '" class="ui yellow button mini">disposisi -></a>';
             }, 'Disposisi'),
-            // Kolom Aksi untuk tombol Lihat, Ubah, dan Hapus
             RestfulButton::make('modules::surat-masuk', 'Aksi'),
         ];
     }

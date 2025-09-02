@@ -11,6 +11,11 @@ $tableClass = '';
 ?>
 
 <style>
+    /* MENAMBAHKAN KODE INI UNTUK MEMBUAT HEADER TEBAL */
+    .auto-width-table th {
+        font-weight: 900 !important; /* Meningkatkan ketebalan font */
+    }
+
     .auto-width-table {
         table-layout: auto;
         white-space: nowrap;
@@ -30,6 +35,11 @@ $tableClass = '';
         white-space: nowrap;
         max-width: 100px;
         /* ✅ Boleh kasih batas khusus kolom ini */
+    }
+
+        /* Sembunyikan tombol "Add" khusus untuk halaman log surat masuk */
+    a.button[href*="/log-surat-masuk/create"] {
+        display: none !important;
     }
 </style>
 
@@ -59,16 +69,24 @@ $tableClass = '';
     </thead>
     <tbody class="collection">
     @forelse($collection as $data)
-        @php($outerLoop = $loop)
-        @if($row)
-            @include($row)
-        @else
-            <tr>
-                @foreach($columns as $column)
-                    <td {!! $column->cellAttributes($data) !!}>{!! $column->cell($data, $collection, $outerLoop) !!}</td>
-                @endforeach
-            </tr>
-        @endif
+        @php
+            // Logika untuk menentukan kelas CSS berdasarkan status
+            $rowClass = '';
+            if (isset($data->status)) {
+                if ($data->status === 'Kirim') {
+                    $rowClass = 'green'; // Warna hijau yang lebih jelas
+                }
+                // Kondisi untuk status 'Karo' dihapus, sehingga akan menggunakan warna default
+            }
+            // Menyimpan variabel loop dari baris data sebelum masuk ke loop kolom
+            $outerLoop = $loop;
+        @endphp
+        <tr class="{{ $rowClass }}">
+            @foreach($columns as $column)
+                {{-- Menggunakan $outerLoop agar penomoran baris benar --}}
+                <td {!! $column->cellAttributes($data) !!}>{!! $column->cell($data, $collection, $outerLoop) !!}</td>
+            @endforeach
+        </tr>
     @empty
         @include('suitable::empty')
     @endforelse

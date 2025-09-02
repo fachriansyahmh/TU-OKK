@@ -40,4 +40,15 @@ class User extends BaseUser
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Determine if the user has verified their email address.
+     * This is overridden to always return true, effectively disabling email verification.
+     *
+     * @return bool
+     */
+    public function hasVerifiedEmail()
+    {
+        return true;
+    }
 }

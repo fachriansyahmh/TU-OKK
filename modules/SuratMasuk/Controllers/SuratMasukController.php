@@ -14,8 +14,22 @@ use Modules\SuratMasuk\Tables\SuratMasukTableView;
 
 class SuratMasukController extends Controller
 {
-    public function index(): Responsable
+    public function index(): Responsable|RedirectResponse
     {
+        // Cek jika parameter 'page' belum ada di URL
+        if (!request()->has('page')) {
+            // Hitung halaman terakhir
+            $totalSurat = SuratMasuk::count();
+            $perPage = (new SuratMasuk())->getPerPage();
+            $lastPage = ceil($totalSurat / $perPage);
+
+            // Redirect ke halaman terakhir jika ada data
+            if ($lastPage > 0) {
+                return to_route('modules::surat-masuk.index', ['page' => $lastPage]);
+            }
+        }
+
+        // Jika parameter 'page' sudah ada, atau tidak ada data, tampilkan tabel seperti biasa
         return SuratMasukTableView::make()->view('surat-masuk::index');
     }
 
@@ -31,7 +45,12 @@ class SuratMasukController extends Controller
 
     public function store(Store $request): RedirectResponse
     {
+        // Mengambil semua data yang sudah lolos validasi dari form
         $data = $request->validated();
+
+        // 2. Menambahkan ID pengguna yang sedang login ke dalam data
+        // `auth()->id()` akan mengambil ID dari user yang saat ini terautentikasi.
+        $data['pengolah_id'] = auth()->id();
 
         if ($request->has('_lampiran')) {
             $dataLampiran = json_decode($data['_lampiran'], true);
@@ -43,10 +62,13 @@ class SuratMasukController extends Controller
 
         unset($data['_lampiran']);
 
+        // 3. Membuat record baru di database dengan data yang sudah dimodifikasi
         SuratMasuk::create($data);
 
+        // Arahkan kembali ke halaman indeks
         return to_route('modules::surat-masuk.index')->withSuccess('Surat Masuk saved');
     }
+
 
     public function show(SuratMasuk $suratMasuk): View
     {
@@ -85,32 +107,37 @@ class SuratMasukController extends Controller
             $data['lampiran'] = $dataURL;
         }
 
-        // Cek apakah ini adalah aksi disposisi dengan memeriksa salah satu field disposisi.
         $isDisposisiAction = $request->has('disposisi_kepada')
                             || $request->has('disposisi_id')
                             || $request->has('isi_disposisi');
 
         if ($isDisposisiAction) {
-            // Jika ini adalah aksi disposisi, validasi bahwa semua field disposisi wajib diisi.
             $disposisiData = $request->validate([
                 'disposisi_kepada' => ['required', 'string', 'max:255'],
                 'disposisi_id' => ['required', 'integer'],
                 'isi_disposisi' => ['required', 'string'],
             ]);
-
-            // Gabungkan data yang sudah divalidasi
             $data = array_merge($data, $disposisiData);
-
-            // Jika validasi lolos, ubah status menjadi 'Kirim'
             $data['status'] = 'Kirim';
         }
-
 
         unset($data['_lampiran']);
 
         $suratMasuk->update($data);
 
-        return to_route('modules::surat-masuk.index')->withSuccess('Surat Masuk updated');
+        // --- BAGIAN YANG DIUBAH DIMULAI DARI SINI ---
+
+        // 1. Hitung posisi surat yang baru diupdate berdasarkan ID
+        $position = SuratMasuk::where('id', '<=', $suratMasuk->id)->count();
+
+        // 2. Ambil jumlah item per halaman dari model
+        $perPage = (new SuratMasuk())->getPerPage();
+
+        // 3. Hitung di halaman berapa surat tersebut berada
+        $page = ceil($position / $perPage);
+
+        // 4. Arahkan kembali ke halaman yang benar
+        return to_route('modules::surat-masuk.index', ['page' => $page])->withSuccess('Surat Masuk updated');
     }
 
     public function destroy(SuratMasuk $suratMasuk): RedirectResponse

@@ -2,14 +2,15 @@
 
 namespace Modules\SuratMasuk\Models;
 
+use App\Models\User; // 1. Ganti import Pengolah menjadi User
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Laravolt\Suitable\AutoFilter;
 use Laravolt\Suitable\AutoSearch;
 use Laravolt\Suitable\AutoSort;
 use Modules\Disposisi\Models\Disposisi;
 use Modules\JenisSurat\Models\JenisSurat;
-use Modules\Pengolah\Models\Pengolah;
 
 class SuratMasuk extends Model
 {
@@ -19,10 +20,9 @@ class SuratMasuk extends Model
 
     protected $guarded = [];
 
-    /** @var array<string> */
     protected $searchableColumns = [
         'status',
-        'pengolah.nama_pengolah',
+        'pengolah.name', // 2. Ubah kolom pencarian
         'sifat_naskah',
         'jenis_surat.jenis_surat',
         'nama_pengirim',
@@ -32,25 +32,33 @@ class SuratMasuk extends Model
         'tgl_naskah',
         'tgl_diterima',
         'ringkasan_isi_surat',
-        'disposisi_kepada', // Menambahkan kolom ini agar bisa dicari
+        'disposisi_kepada',
     ];
 
-    protected static function newFactory()
+    protected static function boot()
     {
-        // return SuratMasukFactory::new();
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->nomor_urut = (self::max('nomor_urut') ?? 0) + 1;
+        });
+
+        static::deleting(function ($model) {
+            $deletedNomorUrut = $model->nomor_urut;
+            self::where('nomor_urut', '>', $deletedNomorUrut)->decrement('nomor_urut');
+        });
     }
 
+    // 3. Ubah relasi agar menunjuk ke model User
     public function pengolah()
     {
-        return $this->belongsTo(Pengolah::class, 'pengolah_id');
+        return $this->belongsTo(User::class, 'pengolah_id');
     }
-    
+
     public function jenis_surat()
     {
         return $this->belongsTo(JenisSurat::class, 'jenis_naskah_id');
     }
-
-    // Relasi disposisi_kepada() dihapus karena kolomnya sekarang adalah string biasa.
 
     public function disposisi()
     {

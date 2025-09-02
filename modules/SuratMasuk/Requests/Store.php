@@ -16,7 +16,7 @@ class Store extends FormRequest
         return [
             // Aturan yang sudah ada dibuat 'sometimes' agar tidak wajib diisi saat update disposisi
             'status' => ['sometimes', 'required'],
-            'pengolah_id' => ['nullable'],
+            // 'pengolah_id' => ['nullable'],
             'sifat_naskah' => ['sometimes', 'required'],
             'jenis_naskah_id' => ['nullable'],
             'nama_pengirim' => ['sometimes', 'required'],

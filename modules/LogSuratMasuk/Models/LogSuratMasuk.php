@@ -2,11 +2,13 @@
 
 namespace Modules\LogSuratMasuk\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravolt\Suitable\AutoFilter;
 use Laravolt\Suitable\AutoSearch;
 use Laravolt\Suitable\AutoSort;
+use Modules\SuratMasuk\Models\SuratMasuk;
 
 class LogSuratMasuk extends Model
 {
@@ -17,10 +19,21 @@ class LogSuratMasuk extends Model
     protected $guarded = [];
 
     /** @var array<string> */
-    protected $searchableColumns = ['action', 'description'];
+    protected $searchableColumns = ['action', 'description', 'user.name', 'suratMasuk.nomor_naskah'];
 
-    protected static function newFactory()
+    /**
+     * Mendefinisikan relasi ke model User.
+     */
+    public function user()
     {
-        return LogSuratMasukFactory::new();
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Mendefinisikan relasi ke model SuratMasuk.
+     */
+    public function suratMasuk()
+    {
+        return $this->belongsTo(SuratMasuk::class, 'surat_masuk_id');
     }
 }

@@ -18,19 +18,20 @@ class LogSuratMasukController extends Controller
         return LogSuratMasukTableView::make()->view('log-surat-masuk::index');
     }
 
-    public function create(): View
+    /**
+     * Mengalihkan pengguna karena log tidak seharusnya dibuat secara manual.
+     */
+    public function create(): RedirectResponse
     {
-        /** @var view-string */
-        $view = 'log-surat-masuk::create';
-
-        return view($view);
+        return to_route('modules::log-surat-masuk.index');
     }
 
+    /**
+     * Mengalihkan pengguna karena log tidak seharusnya disimpan secara manual.
+     */
     public function store(Store $request): RedirectResponse
     {
-        LogSuratMasuk::create($request->validated());
-
-        return to_route('modules::log-surat-masuk.index')->withSuccess('Log Surat Masuk saved');
+        return to_route('modules::log-surat-masuk.index');
     }
 
     public function show(LogSuratMasuk $logSuratMasuk): View
