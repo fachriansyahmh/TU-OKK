@@ -44,10 +44,11 @@ class SuratMasukTableView extends TableView
             Text::make('isi_disposisi', 'Isi Disposisi')->sortable(),
             Text::make('nama_pengirim')->sortable(),
             Text::make('jabatan_pengirim', 'Jabatan Pengirim')->sortable(),
-            Text::make('instansi_pengirim', 'Instansi Pengirim')->sortable(),
+            Text::make('asal_pengirim', 'Asal Pengirim')->sortable(),
             Text::make('nomor_naskah')->sortable(),
             Text::make('tgl_naskah', 'Tanggal Naskah')->sortable(),
             Text::make('tgl_diterima', 'Tanggal Diterima')->sortable(),
+            Text::make('isi_disposisi_sekjen_deputi', 'Isi Disposisi Sekjen/Deputi')->sortable(),
             Text::make('ringkasan_isi_surat', 'Ringkasan Isi Surat')->sortable(),
             Raw::make(function ($data) {
                 return '<a href="' . $data->lampiran . '" target="_blank" class="ui icon button basic mini"><i class="file alternate icon"></i></a>';
@@ -61,3 +62,4 @@ class SuratMasukTableView extends TableView
         ];
     }
 }
+

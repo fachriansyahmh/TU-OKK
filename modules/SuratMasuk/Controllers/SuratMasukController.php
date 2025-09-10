@@ -11,13 +11,15 @@ use Modules\SuratMasuk\Models\SuratMasuk;
 use Modules\SuratMasuk\Requests\Store;
 use Modules\SuratMasuk\Requests\Update;
 use Modules\SuratMasuk\Tables\SuratMasukTableView;
+use Illuminate\Support\Facades\Auth;
+
 
 class SuratMasukController extends Controller
 {
     public function index(): Responsable|RedirectResponse
     {
-        // Cek jika parameter 'page' belum ada di URL
-        if (!request()->has('page')) {
+        // PERBAIKAN: Hanya redirect jika tidak ada parameter 'page' DAN tidak ada 'search'
+        if (!request()->has('page') && !request()->has('search')) {
             // Hitung halaman terakhir
             $totalSurat = SuratMasuk::count();
             $perPage = (new SuratMasuk())->getPerPage();
@@ -29,7 +31,7 @@ class SuratMasukController extends Controller
             }
         }
 
-        // Jika parameter 'page' sudah ada, atau tidak ada data, tampilkan tabel seperti biasa
+        // Jika ada parameter 'page' atau 'search', tampilkan tabel seperti biasa
         return SuratMasukTableView::make()->view('surat-masuk::index');
     }
 
@@ -45,28 +47,29 @@ class SuratMasukController extends Controller
 
     public function store(Store $request): RedirectResponse
     {
-        // Mengambil semua data yang sudah lolos validasi dari form
         $data = $request->validated();
-
-        // 2. Menambahkan ID pengguna yang sedang login ke dalam data
-        // `auth()->id()` akan mengambil ID dari user yang saat ini terautentikasi.
         $data['pengolah_id'] = auth()->id();
 
-        if ($request->has('_lampiran')) {
+        // Logika untuk menangani lampiran
+        if ($request->input('lampiran_type') === 'upload' && $request->has('_lampiran')) {
             $dataLampiran = json_decode($data['_lampiran'], true);
-            $dataURL = $dataLampiran[0]['file'] ?? null;
-            $data['lampiran'] = $dataURL;
+            $data['lampiran'] = $dataLampiran[0]['file'] ?? null;
+        } elseif ($request->input('lampiran_type') === 'link') {
+            $data['lampiran'] = $request->input('lampiran_link');
         } else {
             $data['lampiran'] = null;
         }
 
-        unset($data['_lampiran']);
+        unset($data['lampiran_type'], $data['lampiran_link'], $data['_lampiran']);
 
-        // 3. Membuat record baru di database dengan data yang sudah dimodifikasi
         SuratMasuk::create($data);
 
-        // Arahkan kembali ke halaman indeks
-        return to_route('modules::surat-masuk.index')->withSuccess('Surat Masuk saved');
+        // Logika redirect ke halaman terakhir
+        $total = SuratMasuk::count();
+        $perPage = (new SuratMasuk())->getPerPage();
+        $lastPage = ceil($total / $perPage);
+
+        return to_route('modules::surat-masuk.index', ['page' => $lastPage])->withSuccess('Surat Masuk saved');
     }
 
 
@@ -86,9 +89,6 @@ class SuratMasukController extends Controller
         return view($view, compact('suratMasuk'));
     }
 
-    /**
-     * Menampilkan halaman form disposisi.
-     */
     public function disposisi(SuratMasuk $suratMasuk): View
     {
         /** @var view-string $view */
@@ -100,16 +100,28 @@ class SuratMasukController extends Controller
     public function update(Update $request, SuratMasuk $suratMasuk): RedirectResponse
     {
         $data = $request->validated();
+        $originalLampiran = $suratMasuk->lampiran;
 
-        if ($request->has('_lampiran')) {
+        // Logika untuk menangani lampiran
+        if ($request->input('lampiran_type') === 'upload' && $request->has('_lampiran')) {
             $dataLampiran = json_decode($data['_lampiran'], true);
-            $dataURL = $dataLampiran[0]['file'] ?? null;
-            $data['lampiran'] = $dataURL;
+            $data['lampiran'] = $dataLampiran[0]['file'] ?? $originalLampiran;
+        } elseif ($request->input('lampiran_type') === 'link') {
+            $data['lampiran'] = $request->input('lampiran_link');
         }
 
-        $isDisposisiAction = $request->has('disposisi_kepada')
-                            || $request->has('disposisi_id')
-                            || $request->has('isi_disposisi');
+        // Logika untuk menghapus file lama jika berubah
+        if (isset($data['lampiran']) && $originalLampiran !== $data['lampiran']) {
+            // Cek jika lampiran lama adalah file yang di-upload (bukan link eksternal)
+            if ($originalLampiran && str_starts_with($originalLampiran, url('storage'))) {
+                $filePath = str_replace(url('/'), public_path(), $originalLampiran);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+        }
+
+        $isDisposisiAction = $request->has('disposisi_kepada') || $request->has('disposisi_id') || $request->has('isi_disposisi');
 
         if ($isDisposisiAction) {
             $disposisiData = $request->validate([
@@ -121,29 +133,21 @@ class SuratMasukController extends Controller
             $data['status'] = 'Kirim';
         }
 
-        unset($data['_lampiran']);
+        unset($data['lampiran_type'], $data['lampiran_link'], $data['_lampiran']);
 
         $suratMasuk->update($data);
 
-        // --- BAGIAN YANG DIUBAH DIMULAI DARI SINI ---
-
-        // 1. Hitung posisi surat yang baru diupdate berdasarkan ID
+        // Logika redirect ke halaman yang sama setelah edit
         $position = SuratMasuk::where('id', '<=', $suratMasuk->id)->count();
-
-        // 2. Ambil jumlah item per halaman dari model
         $perPage = (new SuratMasuk())->getPerPage();
-
-        // 3. Hitung di halaman berapa surat tersebut berada
         $page = ceil($position / $perPage);
 
-        // 4. Arahkan kembali ke halaman yang benar
         return to_route('modules::surat-masuk.index', ['page' => $page])->withSuccess('Surat Masuk updated');
     }
 
     public function destroy(SuratMasuk $suratMasuk): RedirectResponse
     {
         $suratMasuk->delete();
-
         return to_route('modules::surat-masuk.index')->withSuccess('Surat Masuk deleted');
     }
 }

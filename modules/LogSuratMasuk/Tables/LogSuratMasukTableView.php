@@ -61,13 +61,30 @@ class LogSuratMasukTableView extends TableView
                 return $data->suratMasuk?->nomor_naskah ?? 'Surat Dihapus';
             }, 'Nomor Naskah')->sortable('suratMasuk.nomor_naskah'),
 
-            Text::make('action', 'Aksi')->sortable(),
+            // Logika baru untuk memberi warna pada kolom Aksi
+            Raw::make(function ($data) {
+                $action = $data->action;
+                $color = 'grey'; // Warna default
+
+                switch ($action) {
+                    case 'DIBUAT':
+                        $color = 'green'; // Warna hijau untuk data baru
+                        break;
+                    case 'DIPERBARUI':
+                        $color = 'blue'; // Warna biru untuk data yang diperbarui
+                        break;
+                    case 'DIHAPUS':
+                        $color = 'red'; // Warna merah untuk data yang dihapus
+                        break;
+                }
+
+                return "<div class='ui {$color} label'>{$action}</div>";
+            }, 'Aksi')->sortable('action'),
 
             Raw::make(function ($data) {
                 return $data->suratMasuk?->ringkasan_isi_surat ?? 'Surat Dihapus';
             }, 'Ringkasan Isi Surat')->sortable('suratMasuk.ringkasan_isi_surat'),
 
-            // Menambahkan kolom untuk menampilkan waktu dan tanggal aksi
             Raw::make(function ($data) {
                 // Menggunakan Carbon untuk memformat tanggal ke format Indonesia
                 return optional($data->created_at)->isoFormat('D MMMM YYYY, HH:mm');

@@ -29,8 +29,8 @@ class LogSuratMasukServiceProvider extends BaseServiceProvider
             if ($menu->modules) {
                 $menu->modules
                     ->add('Log Surat Masuk', route('modules::log-surat-masuk.index'))
-                    ->data('icon', 'circle')
-                    ->data('order', 5) // Anda bisa menggunakan data('order') untuk urutan
+                    ->data('icon', 'history')
+                    ->data('order', 2) // Anda bisa menggunakan data('order') untuk urutan
                     ->data('permission', $this->config['permission'] ?? [])
                     ->active('modules/log-surat-masuk/*');
             }

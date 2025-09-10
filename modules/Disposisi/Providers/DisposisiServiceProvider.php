@@ -30,7 +30,7 @@ class DisposisiServiceProvider extends BaseServiceProvider
                 $menu->modules
                     ->add('Disposisi', route('modules::disposisi.index'))
                     ->data('icon', 'share')
-                    ->data('order', 2)
+                    ->data('order', 5)
                     ->data('permission', $this->config['permission'] ?? [])
                     ->active('modules/disposisi/*');
             }

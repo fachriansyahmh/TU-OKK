@@ -18,8 +18,18 @@ class LogSuratMasuk extends Model
 
     protected $guarded = [];
 
-    /** @var array<string> */
-    protected $searchableColumns = ['action', 'description', 'user.name', 'suratMasuk.nomor_naskah'];
+    /**
+     * PERBAIKAN:
+     * Menambahkan 'suratMasuk.ringkasan_isi_surat' ke dalam array
+     * agar fitur pencarian bisa mencari di kolom relasi.
+     */
+    protected $searchableColumns = [
+        'action',
+        'description',
+        'user.name',
+        'suratMasuk.nomor_naskah',
+        'suratMasuk.ringkasan_isi_surat' // <-- Tambahkan baris ini
+    ];
 
     /**
      * Mendefinisikan relasi ke model User.

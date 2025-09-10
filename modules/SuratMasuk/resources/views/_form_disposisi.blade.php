@@ -35,7 +35,7 @@
 {{-- 3. Buat input teks untuk "Lainnya" --}}
 <div class="field">
     <label>Lainnya</label>
-    <input type="text" id="disposisi_lainnya" placeholder="Isi disposisi lainnya jika ada...">
+    <input type="text" id="disposisi_lainnya" placeholder="Isi tujuan disposisi lainnya jika ada...">
 </div>
 
 

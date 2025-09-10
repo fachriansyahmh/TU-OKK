@@ -1,7 +1,7 @@
-<x-volt-app :title="'Pengolah'">
+<x-volt-app :title="'Log Disposisi'">
     <x-slot name="actions">
         <x-volt-link-button
-            :url="route('modules::pengolah.create')"
+            :url="route('modules::log-disposisi.create')"
             icon="plus"
             :label="__('laravolt::action.add')"
         />

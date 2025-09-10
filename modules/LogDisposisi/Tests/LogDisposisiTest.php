@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Pengolah\Tests;
+namespace Modules\LogDisposisi\Tests;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use :Namespace:\:ModuleName:\Models\:ModuleName:;
 use Tests\TestCase;
 
-class PengolahTest extends TestCase
+class LogDisposisiTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
@@ -25,21 +25,21 @@ class PengolahTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_open_index_page(): void
     {
-        $this->get(route('modules::pengolah.index'))->assertStatus(200);
+        $this->get(route('modules::log-disposisi.index'))->assertStatus(200);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_open_create_page(): void
     {
-        $this->get(route('modules::pengolah.create'))->assertStatus(200);
+        $this->get(route('modules::log-disposisi.create'))->assertStatus(200);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_store_data(): void
     {
-        $attributes = Pengolah::factory()->raw();
+        $attributes = LogDisposisi::factory()->raw();
 
-        $this->post(route('modules::pengolah.store'), $attributes)
+        $this->post(route('modules::log-disposisi.store'), $attributes)
             ->assertStatus(302)
             ->assertSessionDoesntHaveErrors();
     }
@@ -47,27 +47,28 @@ class PengolahTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_open_show_page(): void
     {
-        $pengolah = Pengolah::factory()->create();
+        $logDisposisi = LogDisposisi::factory()->create();
 
-        $this->get(route('modules::pengolah.show', $pengolah))->assertStatus(200);
+        $this->get(route('modules::log-disposisi.show', $logDisposisi))->assertStatus(200);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_open_edit_page(): void
     {
-        $pengolah = Pengolah::factory()->create();
+        $logDisposisi = LogDisposisi::factory()->create();
 
-        $this->get(route('modules::pengolah.edit', $pengolah))->assertStatus(200);
+        $this->get(route('modules::log-disposisi.edit', $logDisposisi))->assertStatus(200);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_update_data(): void
     {
-        $pengolah = Pengolah::factory()->create();
-        $attributes = $pengolah->toArray();
-        $attributes['nama_pengolah'] = 'Updated Content';
+        $logDisposisi = LogDisposisi::factory()->create();
+        $attributes = $logDisposisi->toArray();
+        $attributes['action'] = 'Updated Action';
+        $attributes['description'] = 'Updated Description';
 
-        $this->put(route('modules::pengolah.update', $pengolah), $attributes)
+        $this->put(route('modules::log-disposisi.update', $logDisposisi), $attributes)
             ->assertStatus(302)
             ->assertSessionDoesntHaveErrors();
     }
@@ -75,8 +76,8 @@ class PengolahTest extends TestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_delete_data(): void
     {
-        $pengolah = Pengolah::factory()->create();
+        $logDisposisi = LogDisposisi::factory()->create();
 
-        $this->delete(route('modules::pengolah.destroy', $pengolah))->assertStatus(302);
+        $this->delete(route('modules::log-disposisi.destroy', $logDisposisi))->assertStatus(302);
     }
 }

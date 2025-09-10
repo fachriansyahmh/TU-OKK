@@ -1,3 +1,16 @@
+{{-- Tombol untuk Fitur Zoom dengan ikon baru --}}
+<div class="ui mini basic buttons" style="margin-bottom: 1rem;">
+    <button id="zoom-out-btn" class="ui icon button" data-tooltip="Perkecil Tampilan">
+        <i class="search minus icon"></i>
+    </button>
+    <button id="zoom-reset-btn" class="ui icon button" data-tooltip="Zoom Default">
+        <i class="search icon"></i>
+    </button>
+    <button id="zoom-in-btn" class="ui icon button" data-tooltip="Perbesar Tampilan">
+        <i class="search plus icon"></i>
+    </button>
+</div>
+
 <?php
 
 $tableClass = '';
@@ -11,9 +24,14 @@ $tableClass = '';
 ?>
 
 <style>
-    /* MENAMBAHKAN KODE INI UNTUK MEMBUAT HEADER TEBAL */
+    /* MEMBUAT HEADER TEBAL */
     .auto-width-table th {
-        font-weight: 900 !important; /* Meningkatkan ketebalan font */
+        font-weight: 900 !important;
+    }
+
+    /* MEMBUAT FONT DI BARIS BERWARNA MENJADI HITAM */
+    .ui.table tr.green td {
+        color: black !important;
     }
 
     .auto-width-table {
@@ -41,6 +59,24 @@ $tableClass = '';
     a.button[href*="/log-surat-masuk/create"] {
         display: none !important;
     }
+
+    /* CSS BARU UNTUK MEMBUAT KOLOM "BEKU" */
+    .auto-width-table .sticky-col {
+        position: -webkit-sticky; /* Untuk Safari */
+        position: sticky;
+        z-index: 2; /* Pastikan kolom ini di atas kolom lain */
+        background: white; /* Beri warna latar agar tidak transparan */
+    }
+
+    .auto-width-table .first-col {
+        left: 0; /* Kolom pertama menempel di paling kiri */
+    }
+
+    .auto-width-table .second-col {
+        left: 50px; /* Kolom kedua menempel setelah kolom pertama. Angka ini mungkin perlu disesuaikan dengan lebar kolom "No" Anda. */
+    }
+
+
 </style>
 
 <div class="overflow-x-auto w-full" style="overflow-x: auto">
@@ -70,13 +106,15 @@ $tableClass = '';
     <tbody class="collection">
     @forelse($collection as $data)
         @php
-            // Logika untuk menentukan kelas CSS berdasarkan status
+            // LOGIKA GABUNGAN: Baris akan berwarna hijau jika statusnya 'KIRIM' ATAU jika salah satu kolom disposisi sudah terisi
             $rowClass = '';
-            if (isset($data->status)) {
-                if ($data->status === 'Kirim') {
-                    $rowClass = 'green'; // Warna hijau yang lebih jelas
-                }
-                // Kondisi untuk status 'Karo' dihapus, sehingga akan menggunakan warna default
+            if (
+                ($data->status ?? '') === 'Kirim' ||
+                !empty($data->disposisi_kepada) ||
+                !empty($data->disposisi_id) ||
+                !empty($data->isi_disposisi)
+            ) {
+                $rowClass = 'green';
             }
             // Menyimpan variabel loop dari baris data sebelum masuk ke loop kolom
             $outerLoop = $loop;
@@ -102,3 +140,50 @@ $tableClass = '';
         }
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomResetBtn = document.getElementById('zoom-reset-btn');
+        const table = document.querySelector('.auto-width-table');
+        const storageKey = 'tableZoomLevel'; // Kunci untuk localStorage
+
+        // Ukuran default dan langkah perubahan
+        const defaultZoom = 1;
+        const step = 0.1;
+
+        // Ambil zoom dari localStorage atau gunakan default
+        let currentZoom = parseFloat(localStorage.getItem(storageKey)) || defaultZoom;
+
+        // Fungsi untuk menerapkan dan menyimpan zoom
+        function applyZoom(zoomLevel) {
+            table.style.fontSize = zoomLevel + 'rem';
+            localStorage.setItem(storageKey, zoomLevel);
+        }
+
+        // Terapkan zoom saat halaman dimuat
+        applyZoom(currentZoom);
+
+        zoomInBtn.addEventListener('click', function () {
+            currentZoom += step;
+            applyZoom(currentZoom);
+        });
+
+        zoomOutBtn.addEventListener('click', function () {
+            // Batasi agar tidak terlalu kecil
+            if (currentZoom > 0.5 + step) { // Buffer kecil untuk menghindari masalah floating point
+                currentZoom -= step;
+                applyZoom(currentZoom);
+            }
+        });
+
+        // Event listener untuk tombol reset
+        zoomResetBtn.addEventListener('click', function () {
+            currentZoom = defaultZoom;
+            table.style.fontSize = defaultZoom + 'rem';
+            localStorage.removeItem(storageKey);
+        });
+    });
+</script>
+

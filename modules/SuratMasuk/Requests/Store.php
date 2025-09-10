@@ -16,22 +16,26 @@ class Store extends FormRequest
         return [
             // Aturan yang sudah ada dibuat 'sometimes' agar tidak wajib diisi saat update disposisi
             'status' => ['sometimes', 'required'],
-            // 'pengolah_id' => ['nullable'],
             'sifat_naskah' => ['sometimes', 'required'],
             'jenis_naskah_id' => ['nullable'],
             'nama_pengirim' => ['sometimes', 'required'],
             'jabatan_pengirim' => ['sometimes', 'required'],
-            'instansi_pengirim' => ['sometimes', 'required'],
+            'asal_pengirim' => ['sometimes', 'required'],
             'nomor_naskah' => ['sometimes', 'required'],
-            'tgl_naskah' => ['sometimes', 'required'],
-            'tgl_diterima' => ['sometimes', 'required'],
+            'tgl_naskah' => ['sometimes', 'required', 'date'],
+            'tgl_diterima' => ['sometimes', 'required', 'date'],
+            'isi_disposisi_sekjen_deputi' => ['sometimes', 'required'],
             'ringkasan_isi_surat' => ['sometimes', 'required'],
-            '_lampiran' => ['sometimes', 'required'],
 
-            // Aturan validasi baru untuk form disposisi
+            // Aturan validasi untuk form disposisi
             'disposisi_kepada' => ['nullable', 'string', 'max:255'],
             'disposisi_id' => ['nullable', 'integer'],
             'isi_disposisi' => ['nullable', 'string'],
+
+            // Aturan validasi BARU untuk lampiran (dibuat sometimes agar tidak mengganggu form lain)
+            'lampiran_type' => ['sometimes', 'required', 'in:upload,link'],
+            '_lampiran' => ['nullable', 'required_if:lampiran_type,upload'],
+            'lampiran_link' => ['nullable', 'required_if:lampiran_type,link', 'url'],
         ];
     }
 

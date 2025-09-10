@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Pengolah\Requests;
+namespace Modules\LogDisposisi\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,7 +14,10 @@ class Store extends FormRequest
     public function rules(): array
     {
         return [
-            'nama_pengolah' => ['required'],
+            'user_id' => [''],
+            'surat_masuk_id' => [''],
+            'action' => ['required'],
+            'description' => ['required'],
         ];
     }
 

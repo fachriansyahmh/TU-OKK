@@ -1,14 +1,14 @@
 <?php
 
-namespace Modules\Pengolah\Providers;
+namespace Modules\LogDisposisi\Providers;
 
 use Laravolt\Support\Base\BaseServiceProvider;
 
-class PengolahServiceProvider extends BaseServiceProvider
+class LogDisposisiServiceProvider extends BaseServiceProvider
 {
     public function getIdentifier(): string
     {
-        return 'pengolah';
+        return 'log-disposisi';
     }
 
     public function register(): void
@@ -28,11 +28,11 @@ class PengolahServiceProvider extends BaseServiceProvider
         app('laravolt.menu.builder')->register(function ($menu) {
             if ($menu->modules) {
                 $menu->modules
-                    ->add('Pengolah', route('modules::pengolah.index'))
-                    ->data('icon', 'user')
-                    ->data('order', 3)
+                    ->add('Log Disposisi', route('modules::log-disposisi.index'))
+                    ->data('icon', 'clipboard-list') // PERBAIKAN: Menggunakan nama ikon Font Awesome yang benar
+                    ->data('order', 3) // Atur urutan, angka lebih besar akan di bawah
                     ->data('permission', $this->config['permission'] ?? [])
-                    ->active('modules/pengolah/*');
+                    ->active('modules/log-disposisi/*');
             }
         });
     }
