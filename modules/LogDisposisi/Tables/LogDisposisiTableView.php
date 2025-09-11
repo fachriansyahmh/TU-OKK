@@ -29,19 +29,22 @@ class LogDisposisiTableView extends TableView
             Numbering::make('No'),
             Raw::make(fn($data) => $data->suratMasuk?->nomor_urut ? str_pad($data->suratMasuk->nomor_urut, 4, '0', STR_PAD_LEFT) : '-', 'Penomoran')->sortable('suratMasuk.nomor_urut'),
             Raw::make(fn($data) => $data->suratMasuk?->nomor_naskah ?? 'Surat Dihapus', 'Nomor Naskah')->sortable('suratMasuk.nomor_naskah'),
+            
+            // KOLOM BARU: Menambahkan Ringkasan Isi Surat setelah Nomor Naskah
+            Raw::make(fn($data) => $data->suratMasuk?->ringkasan_isi_surat ?? 'Surat Dihapus', 'Ringkasan Isi Surat')->sortable('suratMasuk.ringkasan_isi_surat'),
+
             Raw::make(fn($data) => $data->user?->name ?? 'Sistem', 'User')->sortable('user.name'),
             
-            // PERBAIKAN: Mengubah skema warna sesuai permintaan
             Raw::make(function ($data) {
                 $action = $data->action;
                 $color = 'grey'; // Warna default
 
                 switch ($action) {
                     case 'DISPOSISI DIBUAT':
-                        $color = 'green'; // Dibuat menjadi hijau
+                        $color = 'green';
                         break;
                     case 'DISPOSISI DIPERBARUI':
-                        $color = 'blue'; // Diperbarui menjadi biru
+                        $color = 'blue';
                         break;
                 }
 
@@ -65,3 +68,4 @@ class LogDisposisiTableView extends TableView
         ];
     }
 }
+
