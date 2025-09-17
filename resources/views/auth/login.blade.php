@@ -3,7 +3,16 @@
 
     {!! form()->open(route('auth::login.store'))->attribute('up-target', 'body') !!}
     {!! form()->email('email')->label(__('laravolt::auth.identifier')) !!}
-    {!! form()->password('password')->label(__('laravolt::auth.password')) !!}
+
+    {{-- Mengganti form builder dengan HTML manual untuk menambahkan ikon mata --}}
+    <div class="field required">
+        <label for="password">@lang('laravolt::auth.password')</label>
+        <div class="ui icon input">
+            <input type="password" name="password" id="password-field" required>
+            <i class="eye link icon" id="toggle-password"></i>
+        </div>
+    </div>
+
 
     @if(config('laravolt.platform.features.captcha'))
         <div class="field">
@@ -43,3 +52,22 @@
     {!! form()->close() !!}
 
 </x-volt-auth>
+
+<script>
+    // Menunggu seluruh halaman dimuat sebelum menjalankan skrip
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.querySelector('#toggle-password');
+        const password = document.querySelector('#password-field');
+
+        if(togglePassword && password) {
+            togglePassword.addEventListener('click', function (e) {
+                // Mengubah tipe input dari 'password' ke 'text' dan sebaliknya
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // Mengubah ikon dari 'eye' menjadi 'eye slash' dan sebaliknya
+                this.classList.toggle('slash');
+            });
+        }
+    });
+</script>

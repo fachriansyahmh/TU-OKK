@@ -16,7 +16,7 @@ class SuratMasukTableView extends TableView
     public function source(): LengthAwarePaginator
     {
         // 1. Tambahkan "with" untuk Eager Loading agar query lebih efisien
-        return SuratMasuk::with('pengolah')->autoSort()->autoSearch(request('search'))->paginate();
+        return SuratMasuk::with('pengolah')->autoSort()->autoSearch(request('search'))->paginate(request('per_page', 15));
     }
 
     protected function columns(): array

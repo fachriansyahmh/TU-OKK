@@ -18,21 +18,38 @@ class SuratMasukController extends Controller
 {
     public function index(): Responsable|RedirectResponse
     {
-        // PERBAIKAN: Hanya redirect jika tidak ada parameter 'page' DAN tidak ada 'search'
-        if (!request()->has('page') && !request()->has('search')) {
-            // Hitung halaman terakhir
-            $totalSurat = SuratMasuk::count();
-            $perPage = (new SuratMasuk())->getPerPage();
-            $lastPage = ceil($totalSurat / $perPage);
+        // Ambil per_page dari request, kalau tidak ada pakai default model
+        $defaultPerPage = (new SuratMasuk())->getPerPage();
+        $perPage = request()->integer('per_page', $defaultPerPage);
 
-            // Redirect ke halaman terakhir jika ada data
-            if ($lastPage > 0) {
-                return to_route('modules::surat-masuk.index', ['page' => $lastPage]);
-            }
+        // Hitung halaman terakhir
+        $totalSurat = SuratMasuk::count();
+        $lastPage = (int) ceil($totalSurat / max(1, $perPage)); // hindari pembagian 0
+
+        $requestedPage = request()->integer('page');
+
+        // Kondisi 1: tidak ada parameter page → redirect ke last page
+        if (!$requestedPage && $lastPage > 0) {
+            return to_route('modules::surat-masuk.index', [
+                'page' => $lastPage,
+                'per_page' => $perPage,
+                'search' => request('search'),
+            ]);
         }
 
-        // Jika ada parameter 'page' atau 'search', tampilkan tabel seperti biasa
-        return SuratMasukTableView::make()->view('surat-masuk::index');
+        // Kondisi 2: ada page tapi lebih besar dari last page → redirect ke last page
+        if ($requestedPage > $lastPage && $lastPage > 0) {
+            return to_route('modules::surat-masuk.index', [
+                'page' => $lastPage,
+                'per_page' => $perPage,
+                'search' => request('search'),
+            ]);
+        }
+
+        // Kondisi 3: biarkan user tetap di page yang diminta
+        return SuratMasukTableView::make()
+            ->view('surat-masuk::index')
+            ->showPerPage();
     }
 
     public function create(): View

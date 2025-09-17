@@ -30,7 +30,7 @@ class SuratMasukServiceProvider extends BaseServiceProvider
         parent::boot();
 
         // Mendaftarkan observer agar memantau model SuratMasuk
-        SuratMasuk::observe(SuratMasukObserver::class);
+        // SuratMasuk::observe(SuratMasukObserver::class);
     }
 
     protected function menu(): void

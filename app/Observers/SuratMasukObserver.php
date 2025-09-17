@@ -19,43 +19,29 @@ class SuratMasukObserver
         ]);
     }
 
-    public function updated(SuratMasuk $suratMasuk)
+    public function updated(SuratMasuk $suratMasuk): void
     {
         // Logika untuk Log Surat Masuk (tetap ada untuk semua pembaruan)
         LogSuratMasuk::create([
             'user_id' => Auth::id(),
             'surat_masuk_id' => $suratMasuk->id,
             'action' => 'DIPERBARUI',
-            'description' => "Surat masuk dengan nomor naskah \"{$suratMasuk->nomor_naskah}\" telah diperbarui.",
+            'description' => 'Data surat masuk dengan nomor naskah "' . $suratMasuk->nomor_naskah . '" telah diperbarui.',
         ]);
 
-        // Logika BARU untuk Log Disposisi
-        // Cek jika ada perubahan pada salah satu kolom disposisi
+        // Logika untuk Log Disposisi (hanya berjalan jika ada perubahan disposisi)
         if ($suratMasuk->isDirty('disposisi_kepada') || $suratMasuk->isDirty('disposisi_id') || $suratMasuk->isDirty('isi_disposisi')) {
 
-            // Cek kondisi SEBELUM update. Jika semua kolom disposisi sebelumnya kosong,
-            // maka ini adalah disposisi yang pertama kali dibuat.
-            $isFirstDisposisi = empty($suratMasuk->getOriginal('disposisi_kepada')) &&
-                                empty($suratMasuk->getOriginal('disposisi_id')) &&
-                                empty($suratMasuk->getOriginal('isi_disposisi'));
-
-            if ($isFirstDisposisi) {
-                $action = 'DISPOSISI DIBUAT';
-                $deskripsi = "Disposisi baru untuk surat \"{$suratMasuk->nomor_naskah}\" telah dibuat.";
-            } else {
-                $action = 'DISPOSISI DIPERBARUI';
-                $deskripsi = "Disposisi untuk surat \"{$suratMasuk->nomor_naskah}\" telah diperbarui.";
-            }
+            $deskripsi = "Disposisi untuk surat \"{$suratMasuk->nomor_naskah}\" telah diperbarui.";
 
             LogDisposisi::create([
                 'user_id' => Auth::id(),
                 'surat_masuk_id' => $suratMasuk->id,
-                'action' => $action,
+                'action' => 'DISPOSISI DIPERBARUI',
                 'description' => $deskripsi,
             ]);
         }
     }
-
 
     public function deleting(SuratMasuk $suratMasuk): void
     {

@@ -3,7 +3,7 @@
 return [
     'routes' => [
         'enabled' => true,
-        'middleware' => ['web', 'auth'],
+        'middleware' => ['auth'],
         'prefix' => 'modules',
     ],
     'view' => [

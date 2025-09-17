@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Modules\LogSuratMasuk\Controllers\LogSuratMasukController;
 
-Route::group(
-    [
-        'prefix' => config('modules.log-surat-masuk.routes.prefix'),
+Route::middleware('web')->group(function () {
+    Route::group(
+        [
+            'prefix' => config('modules.log-surat-masuk.routes.prefix'),
         'as' => 'modules::',
         'middleware' => config('modules.log-surat-masuk.routes.middleware'),
     ],
@@ -14,4 +15,5 @@ Route::group(
         // Ini akan mendaftarkan rute index, create, dan store, sehingga error tidak muncul.
         Route::resource('log-surat-masuk', LogSuratMasukController::class)->except(['show', 'edit', 'update', 'destroy']);
     }
-);
+    );
+});
