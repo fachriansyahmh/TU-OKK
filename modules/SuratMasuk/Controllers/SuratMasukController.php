@@ -23,7 +23,11 @@ class SuratMasukController extends Controller
         $perPage = request()->integer('per_page', $defaultPerPage);
 
         // Hitung halaman terakhir
-        $totalSurat = SuratMasuk::count();
+        $totalSurat = SuratMasuk::query();
+        if (request()->has('search')) {
+            $totalSurat = $totalSurat->autoSearch(request('search'));
+        }
+        $totalSurat = $totalSurat->count();
         $lastPage = (int) ceil($totalSurat / max(1, $perPage)); // hindari pembagian 0
 
         $requestedPage = request()->integer('page');
